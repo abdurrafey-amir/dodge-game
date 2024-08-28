@@ -1,12 +1,34 @@
 
 var player
-var enemy
+var meteor
 var gameOver
+var playerImage
+var meteorImage
+var star
+var explosion
+
+function preload() {
+    playerImage = loadImage('assets/player.png')
+    meteorImage = loadImage('assets/meteor.png')
+    starImage = loadImage('assets/star.png')
+    //  play sound
+    explosion = new Audio('assets/explosion.wav')
+}
 
 function setup() {
-    createCanvas(250, 250)
-    player = createSprite(width / 2, height - 25, 50, 50)
-    enemy = createSprite(width / 2, 0, 10, 30)
+    createCanvas(1200, 500)
+    
+    // stars
+    for (var i = 0; i < 20; i++) {
+        star = createSprite(random(0, width), random(0, height), 0, 0)
+        star.addImage(starImage)
+    }
+    
+    player = createSprite(width / 2, height - (playerImage.height / 2), 0, 0)
+    player.addImage(playerImage)
+    meteor = createSprite(width / 2, 0, 0, 0)
+    meteor.addImage(meteorImage)
+    meteor.rotationSpeed = 4
     gameOver = false
 }
 
@@ -23,20 +45,23 @@ function draw() {
         } else if (keyDown(LEFT_ARROW)) {
             player.position.x -= 25
         }
-        if (player.position.x <= 25) {
-            player.position.x = 25
-        } else if (player.position.x >= width - 25) {
-            player.position.x = width - 25
+
+        // boundaries
+        if (player.position.x >= width - (playerImage.width / 2)) {
+            player.position.x = width - (playerImage.width / 2)
+        } else if (player.position.x <= playerImage.width / 2) {
+            player.position.x = playerImage.width / 2
         }
 
-        enemy.position.y += 10
+        meteor.position.y += 10
 
-        if (enemy.position.y > height) {
-            enemy.position.y = 0
-            enemy.position.x = random(5, width - 5)
+        if (meteor.position.y > height) {
+            meteor.position.y = 0
+            meteor.position.x = random(5, width - 5)
         }
 
-        if (player.overlap(enemy)) {
+        if (player.overlap(meteor)) {
+            explosion.play()
             gameOver = true
         }
     }
@@ -59,7 +84,7 @@ function mouseClicked() {
 
 function resetScreen() {
     player.position.x = width / 2
-    player.position.y = height - 25
-    enemy.position.x = width / 2
-    enemy.position.y = 0
+    player.position.y = height - (playerImage.height / 2)
+    meteor.position.x = width / 2
+    meteor.position.y = 0
 }
